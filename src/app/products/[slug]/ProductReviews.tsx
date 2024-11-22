@@ -122,7 +122,7 @@ function Review({
             <CornerDownRight className="size-5" />
             <Image
               src={logo}
-              alt="Flow Store logo"
+              alt="OpticShop365 logo"
               width={24}
               height={24}
               className="size-5"
