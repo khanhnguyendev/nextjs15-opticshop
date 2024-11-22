@@ -1,56 +1,84 @@
+import banner from "@/assets/banner.jpg";
+import Product from "@/components/Product";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getWixServerClient } from "@/lib/wix-client.server";
+import { getCollectionBySlug } from "@/wix-api/collections";
+import { queryProducts } from "@/wix-api/products";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-sans sm:p-20">
-      <main className="row-start-2 flex flex-col items-center gap-8 sm:items-start"></main>
-      <footer className="row-start-3 flex flex-wrap items-center justify-center gap-6">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+    <main className="mx-auto max-w-7xl space-y-10 px-5 py-10">
+      <div className="flex items-center rounded-lg bg-secondary md:h-96">
+        <div className="space-y-7 p-10 text-center md:w-1/2">
+          <h1 className="text-3xl font-bold md:text-4xl">
+            Official Store for Sunglasses, Goggles, Helmets & More
+          </h1>
+          <p>
+            Feeling stressed? Wallet feeling light? Treat yourself to something
+            special and lift your spirits! 💳💸
+          </p>
+          <Button asChild>
+            <Link href="/shop">
+              Shop Now <ArrowRight className="ml-2 size-5" />
+            </Link>
+          </Button>
+        </div>
+        <div className="relative hidden h-full w-1/2 md:block">
           <Image
-            aria-hidden
-            src="/file-text.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+            src={banner}
+            alt="OpticShop365 banner"
+            className="h-full object-cover"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary via-transparent to-transparent" />
+        </div>
+      </div>
+      <Suspense fallback={<LoadingSkeleton />}>
+        <FeaturedProducts />
+      </Suspense>
+    </main>
+  );
+}
+
+async function FeaturedProducts() {
+  const wixClient = getWixServerClient();
+
+  const collection = await getCollectionBySlug(wixClient, "featured-products");
+
+  if (!collection?._id) {
+    return null;
+  }
+
+  const featuredProducts = await queryProducts(wixClient, {
+    collectionIds: collection._id,
+  });
+
+  if (!featuredProducts.items.length) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-5">
+      <h2 className="text-2xl font-bold">Featured Products</h2>
+      <div className="flex grid-cols-2 flex-col gap-5 sm:grid md:grid-cols-3 lg:grid-cols-4">
+        {featuredProducts.items.map((product) => (
+          <Product key={product._id} product={product} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex grid-cols-2 flex-col gap-5 pt-12 sm:grid md:grid-cols-3 lg:grid-cols-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <Skeleton key={i} className="h-[26rem] w-full" />
+      ))}
     </div>
   );
 }
