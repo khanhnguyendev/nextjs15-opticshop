@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import "./globals.css";
 import Navbar from "./Navbar";
 import ReactQueryProvider from "./ReactQueryProvider";
+import { Analytics } from "@vercel/analytics/react";
 
 const lora = Lora({ subsets: ["latin"] });
 
@@ -40,6 +41,7 @@ export default function RootLayout({
           </ReactQueryProvider>
           <Toaster />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

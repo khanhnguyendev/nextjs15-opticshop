@@ -22,6 +22,7 @@
     "@radix-ui/react-tooltip": "^1.1.2",
     "@t3-oss/env-nextjs": "^0.11.1",
     "@tanstack/react-query": "^5.55.4",
+    "@vercel/analytics": "^1.4.1",
     "@wix/ecom": "^1.0.727",
     "@wix/media": "^1.0.116",
     "@wix/members": "^1.0.100",
